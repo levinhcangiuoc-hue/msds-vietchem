@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hệ thống Tra cứu MSDS Pro - VIETCHEM</title>
     <!-- Thư viện xuất Excel -->
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
@@ -15,7 +15,7 @@
             --success: #059669; --warning: #d97706; --danger: #dc2626;
             --dark: #0f172a; --gray: #334155; --light: #f8fafc; --border: #cbd5e1;
         }
-        /* Cải thiện hiển thị font chữ cực kỳ sắc nét trên mọi màn hình */
+        
         body { 
             font-family: 'Inter', system-ui, -apple-system, sans-serif; 
             color: var(--dark); 
@@ -28,21 +28,20 @@
         }
         .container { max-width: 1350px; margin: auto; background: #ffffff; padding: 35px 40px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
         
-        /* HEADER LOGO CÙNG HÀNG */
+        /* HEADER */
         .brand-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--primary); padding-bottom: 20px; margin-bottom: 25px; }
-        .brand-header img { height: 85px; object-fit: contain; }
+        .brand-header img { height: 80px; object-fit: contain; }
         .brand-text-container { display: flex; flex-direction: column; justify-content: center; }
-        .brand-name { font-weight: 800; font-size: clamp(20px, 2.5vw, 28px); color: var(--primary-dark); margin: 0 0 6px 0; letter-spacing: -0.3px; }
-        .brand-sub { font-size: clamp(14px, 1.3vw, 16px); color: var(--gray); font-weight: 500; margin: 0; }
+        .brand-name { font-weight: 800; font-size: clamp(18px, 2.5vw, 28px); color: var(--primary-dark); margin: 0 0 6px 0; letter-spacing: -0.3px; line-height: 1.2; }
+        .brand-sub { font-size: clamp(13px, 1.3vw, 16px); color: var(--gray); font-weight: 500; margin: 0; line-height: 1.3;}
         
         .header-title { text-align: center; font-weight: 800; font-size: 22px; color: var(--dark); margin-bottom: 25px; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        /* CẤU HÌNH API */
+        /* PANELS */
         .panel { background: var(--light); border: 1px solid var(--border); border-radius: 8px; padding: 20px 25px; margin-bottom: 20px; }
         .panel-title { margin-top: 0; color: var(--dark); font-size: 16px; margin-bottom: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         .grid-3 { display: grid; grid-template-columns: 2fr 1fr 2fr; gap: 15px; align-items: center; }
         
-        /* Tăng size chữ, độ đậm và độ tương phản cho ô nhập liệu */
         input[type="password"], select { 
             width: 100%; padding: 12px 15px; border-radius: 6px; border: 1px solid var(--border); 
             font-size: 15px; font-weight: 500; font-family: 'Inter', sans-serif; outline: none; box-sizing: border-box; background: #fff; color: var(--dark);
@@ -55,22 +54,22 @@
         button:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-primary { background: var(--primary); color: white; width: 100%; padding: 16px; font-size: 16px; box-shadow: 0 4px 6px rgba(30,64,175,0.2); margin-top: 5px;}
         .btn-secondary { background: var(--dark); color: white; width: 100%; }
-        .btn-success { background: var(--success); color: white; padding: 14px 30px; font-size: 15px; }
+        .btn-success { background: var(--success); color: white; padding: 14px 30px; font-size: 15px; width: 100%; }
         
         /* UPLOAD THƯ MỤC */
         .upload-wrapper { border: 2px dashed var(--border); background: #ffffff; padding: 25px; text-align: center; border-radius: 8px; cursor: pointer; transition: 0.2s; margin-bottom: 10px;}
         .upload-wrapper:hover { border-color: var(--primary); background: #eff6ff; }
         .upload-wrapper i { font-size: 36px; color: var(--primary); margin-bottom: 8px; }
-        .upload-wrapper p { font-size: 15px; font-weight: 600; color: var(--dark); margin: 0; }
+        .upload-wrapper p { font-size: 15px; font-weight: 600; color: var(--dark); margin: 0; line-height: 1.4; }
         
         /* TERMINAL (TIẾN TRÌNH) */
         .terminal { background: #090d16; color: #34d399; font-family: 'Courier New', Courier, monospace; padding: 15px; border-radius: 6px; height: 240px; overflow-y: auto; margin-bottom: 25px; font-size: 14px; font-weight: 600; line-height: 1.6; white-space: pre-wrap;}
         .progress-bar-container { background: #e2e8f0; border-radius: 4px; height: 10px; overflow: hidden; margin-bottom: 15px; }
         .progress-bar { background: var(--success); height: 100%; width: 0%; transition: width 0.3s; }
         
-        /* TABLE */
-        .table-responsive { overflow-x: auto; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 6px; display: none;}
-        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        /* TABLE TỐI ƯU CUỘN NGANG CHO MOBILE */
+        .table-responsive { overflow-x: auto; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 6px; display: none; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
         th { background: var(--dark); color: white; padding: 14px 12px; text-align: left; font-size: 13px; font-weight: 700; position: sticky; top: 0; text-transform: uppercase; letter-spacing: 0.5px;}
         td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--dark); font-weight: 400;}
         .row-group td { border-top: 2px solid #94a3b8; }
@@ -82,8 +81,38 @@
         .footer-card strong { display: flex; align-items: center; gap: 6px; color: var(--dark); margin-bottom: 6px; font-size: 13px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 6px; letter-spacing: 0.5px; }
         .footer-card p { display: flex; align-items: flex-start; gap: 6px; margin: 0; font-size: 13px; font-weight: 500; color: #475569; line-height: 1.4; }
         
-        @media (max-width: 900px) { .grid-3 { grid-template-columns: 1fr; } .footer-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 600px) { .footer-grid { grid-template-columns: 1fr; } .brand-header { flex-direction: column; text-align: center; } }
+        /* ==============================================
+           📱 CSS ĐỘC QUYỀN TỐI ƯU CHO ĐIỆN THOẠI
+           ============================================== */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .container { padding: 20px 15px; }
+            
+            /* Thu gọn phần Logo và Tên công ty */
+            .brand-header { flex-direction: column; text-align: center; gap: 12px; padding-bottom: 15px; margin-bottom: 15px; }
+            .brand-header img { height: 60px; }
+            
+            /* Tinh chỉnh cỡ chữ Panel & Tiêu đề */
+            .header-title { font-size: 18px; margin-bottom: 15px; }
+            .panel { padding: 15px; margin-bottom: 15px; }
+            .panel-title { font-size: 15px; margin-bottom: 12px; }
+            
+            /* Xếp dọc lại cấu hình API */
+            .grid-3 { grid-template-columns: 1fr; gap: 10px; }
+            input[type="password"], select { font-size: 14px; padding: 10px 12px; }
+            
+            /* Tinh chỉnh khu vực nút bấm & Tải lên */
+            .upload-wrapper { padding: 15px; }
+            .upload-wrapper i { font-size: 30px; }
+            .upload-wrapper p { font-size: 14px; }
+            .btn-primary, .btn-secondary, .btn-success { font-size: 14px; padding: 12px; }
+            
+            /* Thu nhỏ khu vực Terminal */
+            .terminal { height: 180px; font-size: 12px; padding: 12px; line-height: 1.4; }
+            
+            /* Thu gọn Footer */
+            .footer-grid { grid-template-columns: 1fr; gap: 10px; margin-top: 25px; padding-top: 15px; }
+        }
     </style>
 </head>
 <body>
@@ -106,25 +135,26 @@
             <input type="password" id="apiKey" placeholder="Nhập Google API Key...">
             <button class="btn-secondary" onclick="scanModels()"><i class="fa-solid fa-rotate"></i> Quét Model</button>
             <select id="modelSelect">
-                <option value="">-- Chọn Cỗ máy AI --</option>
+                <!-- ĐÃ ĐỔI CHỮ THEO YÊU CẦU -->
+                <option value="">-- Chọn Model --</option>
             </select>
         </div>
     </div>
 
     <!-- TẢI THƯ MỤC -->
     <div class="panel">
-        <h3 class="panel-title"><i class="fa-solid fa-folder-open"></i> 2. Chọn Nguồn Dữ Liệu (Tải Thư Mục)</h3>
+        <h3 class="panel-title"><i class="fa-solid fa-folder-open"></i> 2. Chọn Nguồn Dữ Liệu</h3>
         <input type="file" id="folderInput" webkitdirectory directory multiple accept="application/pdf" style="display: none;" onchange="handleFolderSelect(event)">
         
         <div class="upload-wrapper" onclick="document.getElementById('folderInput').click()">
             <i class="fa-regular fa-folder-closed"></i>
-            <p id="folderText">Click để Chọn Thư Mục chứa các file PDF MSDS</p>
+            <p id="folderText">Chạm vào đây để Chọn Thư Mục chứa các file PDF</p>
         </div>
     </div>
 
     <!-- NÚT BẮT ĐẦU -->
     <button id="btnStart" class="btn-primary" onclick="startExtraction()" disabled>
-        <i class="fa-solid fa-rocket"></i> BẮT ĐẦU TRÍCH XUẤT VÀ ĐỐI CHIẾU
+        <i class="fa-solid fa-rocket"></i> BẮT ĐẦU TRÍCH XUẤT DỮ LIỆU
     </button>
     
     <div style="margin-top: 25px;">
@@ -132,7 +162,7 @@
         <div class="terminal" id="terminalLog">> Hệ thống sẵn sàng... Mời cấu hình API và tải thư mục.<br></div>
     </div>
 
-    <!-- BẢNG KẾT QUẢ -->
+    <!-- BẢNG KẾT QUẢ (VUỐT NGANG TRÊN ĐIỆN THOẠI) -->
     <div class="table-responsive" id="tableContainer">
         <table id="resultTable">
             <thead>
@@ -148,7 +178,7 @@
         </table>
     </div>
     
-    <div style="text-align: center; display: none;" id="exportContainer">
+    <div style="text-align: center; display: none; margin-top: 15px;" id="exportContainer">
         <button class="btn-success" onclick="exportExcel()"><i class="fa-solid fa-file-excel"></i> TẢI BÁO CÁO EXCEL</button>
     </div>
 
@@ -210,7 +240,7 @@
             
             if (data.status === "success") {
                 let sel = document.getElementById('modelSelect');
-                sel.innerHTML = "";
+                sel.innerHTML = '<option value="">-- Chọn Model --</option>'; // Đồng bộ chữ ở Script
                 data.models.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
                 log(`> ✅ Quét thành công! Đã nạp ${data.models.length} model.`);
                 checkReady();
@@ -219,7 +249,7 @@
                 alert("Lỗi cấu hình API. Vui lòng kiểm tra lại Key!");
             }
         } catch (e) {
-            log(`> ❌ Lỗi kết nối máy chủ Flask.`);
+            log(`> ❌ Lỗi kết nối máy chủ.`);
         }
     }
 
@@ -231,7 +261,7 @@
             document.getElementById('folderText').innerHTML = `<b style="color:var(--success)">Đã tải thư mục thành công! Nhận diện ${pdfFiles.length} file PDF.</b>`;
             log(`> 📁 Đã nạp ${pdfFiles.length} file PDF vào hệ thống.`);
         } else {
-            document.getElementById('folderText').innerHTML = `<b style="color:var(--danger)">Không tìm thấy file PDF nào trong thư mục này!</b>`;
+            document.getElementById('folderText').innerHTML = `<b style="color:var(--danger)">Không tìm thấy file PDF nào!</b>`;
             pdfFiles = [];
         }
         checkReady();
@@ -257,7 +287,7 @@
         let globalStt = 1;
         
         log(`\n================================`);
-        log(`> Kích hoạt Động cơ: ${model}`);
+        log(`> Kích hoạt Model: ${model}`);
         log(`> Bắt đầu xử lý ${pdfFiles.length} file...\n`);
         
         for(let i=0; i < pdfFiles.length; i++) {
