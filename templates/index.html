@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Tra cứu MSDS Pro - VIETCHEM</title>
+    <!-- Thư viện xuất Excel -->
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #1e40af; --primary-dark: #1e3a8a; --accent: #2563eb;
+            --success: #059669; --warning: #d97706; --danger: #dc2626;
+            --dark: #0f172a; --gray: #334155; --light: #f8fafc; --border: #cbd5e1;
+        }
+        /* Cải thiện hiển thị font chữ cực kỳ sắc nét trên mọi màn hình */
+        body { 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+            color: var(--dark); 
+            background-color: #f1f5f9; 
+            margin: 0; 
+            padding: 20px; 
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .container { max-width: 1350px; margin: auto; background: #ffffff; padding: 35px 40px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        
+        /* HEADER LOGO CÙNG HÀNG */
+        .brand-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--primary); padding-bottom: 20px; margin-bottom: 25px; }
+        .brand-header img { height: 85px; object-fit: contain; }
+        .brand-text-container { display: flex; flex-direction: column; justify-content: center; }
+        .brand-name { font-weight: 800; font-size: clamp(20px, 2.5vw, 28px); color: var(--primary-dark); margin: 0 0 6px 0; letter-spacing: -0.3px; }
+        .brand-sub { font-size: clamp(14px, 1.3vw, 16px); color: var(--gray); font-weight: 500; margin: 0; }
+        
+        .header-title { text-align: center; font-weight: 800; font-size: 22px; color: var(--dark); margin-bottom: 25px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        /* CẤU HÌNH API */
+        .panel { background: var(--light); border: 1px solid var(--border); border-radius: 8px; padding: 20px 25px; margin-bottom: 20px; }
+        .panel-title { margin-top: 0; color: var(--dark); font-size: 16px; margin-bottom: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .grid-3 { display: grid; grid-template-columns: 2fr 1fr 2fr; gap: 15px; align-items: center; }
+        
+        /* Tăng size chữ, độ đậm và độ tương phản cho ô nhập liệu */
+        input[type="password"], select { 
+            width: 100%; padding: 12px 15px; border-radius: 6px; border: 1px solid var(--border); 
+            font-size: 15px; font-weight: 500; font-family: 'Inter', sans-serif; outline: none; box-sizing: border-box; background: #fff; color: var(--dark);
+        }
+        input[type="password"]:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30,64,175,0.15); }
+        
+        /* BUTTONS */
+        button { font-family: 'Inter', sans-serif; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 15px; font-weight: 700; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        button:hover:not(:disabled) { transform: translateY(-1px); opacity: 0.9; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background: var(--primary); color: white; width: 100%; padding: 16px; font-size: 16px; box-shadow: 0 4px 6px rgba(30,64,175,0.2); margin-top: 5px;}
+        .btn-secondary { background: var(--dark); color: white; width: 100%; }
+        .btn-success { background: var(--success); color: white; padding: 14px 30px; font-size: 15px; }
+        
+        /* UPLOAD THƯ MỤC */
+        .upload-wrapper { border: 2px dashed var(--border); background: #ffffff; padding: 25px; text-align: center; border-radius: 8px; cursor: pointer; transition: 0.2s; margin-bottom: 10px;}
+        .upload-wrapper:hover { border-color: var(--primary); background: #eff6ff; }
+        .upload-wrapper i { font-size: 36px; color: var(--primary); margin-bottom: 8px; }
+        .upload-wrapper p { font-size: 15px; font-weight: 600; color: var(--dark); margin: 0; }
+        
+        /* TERMINAL (TIẾN TRÌNH) */
+        .terminal { background: #090d16; color: #34d399; font-family: 'Courier New', Courier, monospace; padding: 15px; border-radius: 6px; height: 240px; overflow-y: auto; margin-bottom: 25px; font-size: 14px; font-weight: 600; line-height: 1.6; white-space: pre-wrap;}
+        .progress-bar-container { background: #e2e8f0; border-radius: 4px; height: 10px; overflow: hidden; margin-bottom: 15px; }
+        .progress-bar { background: var(--success); height: 100%; width: 0%; transition: width 0.3s; }
+        
+        /* TABLE */
+        .table-responsive { overflow-x: auto; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 6px; display: none;}
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th { background: var(--dark); color: white; padding: 14px 12px; text-align: left; font-size: 13px; font-weight: 700; position: sticky; top: 0; text-transform: uppercase; letter-spacing: 0.5px;}
+        td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--dark); font-weight: 400;}
+        .row-group td { border-top: 2px solid #94a3b8; }
+        
+        /* FOOTER */
+        .footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 40px; padding-top: 25px; border-top: 2px solid var(--border); }
+        .footer-card { background: var(--light); padding: 15px; border-radius: 6px; border: 1px solid var(--border); border-left: 3px solid #64748b; }
+        .footer-card.main-hq { border-left-color: var(--primary); background: #f0f9ff; }
+        .footer-card strong { display: flex; align-items: center; gap: 6px; color: var(--dark); margin-bottom: 6px; font-size: 13px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 6px; letter-spacing: 0.5px; }
+        .footer-card p { display: flex; align-items: flex-start; gap: 6px; margin: 0; font-size: 13px; font-weight: 500; color: #475569; line-height: 1.4; }
+        
+        @media (max-width: 900px) { .grid-3 { grid-template-columns: 1fr; } .footer-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .footer-grid { grid-template-columns: 1fr; } .brand-header { flex-direction: column; text-align: center; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="brand-header">
+        <img src="logo.jpg" alt="VIETCHEM Logo" onerror="this.style.display='none'">
+        <div class="brand-text-container">
+            <h1 class="brand-name">CÔNG TY CỔ PHẦN DỊCH VỤ TƯ VẤN THƯƠNG MẠI VIETCHEM</h1>
+            <p class="brand-sub">Hệ thống Tự động hóa Trích xuất Dữ liệu Hóa chất MSDS</p>
+        </div>
+    </div>
+
+    <h2 class="header-title"><i class="fa-solid fa-shield-halved"></i> BẢNG ĐIỀU KHIỂN TRÍCH XUẤT</h2>
+
+    <!-- BẢNG CẤU HÌNH API -->
+    <div class="panel">
+        <h3 class="panel-title"><i class="fa-solid fa-gear"></i> 1. Cấu hình Kết nối AI</h3>
+        <div class="grid-3">
+            <input type="password" id="apiKey" placeholder="Nhập Google API Key...">
+            <button class="btn-secondary" onclick="scanModels()"><i class="fa-solid fa-rotate"></i> Quét Model</button>
+            <select id="modelSelect">
+                <option value="">-- Chọn Cỗ máy AI --</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- TẢI THƯ MỤC -->
+    <div class="panel">
+        <h3 class="panel-title"><i class="fa-solid fa-folder-open"></i> 2. Chọn Nguồn Dữ Liệu (Tải Thư Mục)</h3>
+        <input type="file" id="folderInput" webkitdirectory directory multiple accept="application/pdf" style="display: none;" onchange="handleFolderSelect(event)">
+        
+        <div class="upload-wrapper" onclick="document.getElementById('folderInput').click()">
+            <i class="fa-regular fa-folder-closed"></i>
+            <p id="folderText">Click để Chọn Thư Mục chứa các file PDF MSDS</p>
+        </div>
+    </div>
+
+    <!-- NÚT BẮT ĐẦU -->
+    <button id="btnStart" class="btn-primary" onclick="startExtraction()" disabled>
+        <i class="fa-solid fa-rocket"></i> BẮT ĐẦU TRÍCH XUẤT VÀ ĐỐI CHIẾU
+    </button>
+    
+    <div style="margin-top: 25px;">
+        <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="terminal" id="terminalLog">> Hệ thống sẵn sàng... Mời cấu hình API và tải thư mục.<br></div>
+    </div>
+
+    <!-- BẢNG KẾT QUẢ -->
+    <div class="table-responsive" id="tableContainer">
+        <table id="resultTable">
+            <thead>
+                <tr>
+                    <th style="width:50px; text-align:center;">STT</th>
+                    <th>Tên File</th>
+                    <th>Sản Phẩm</th>
+                    <th>Thành Phần (Chất)</th>
+                    <th>Mã CAS</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+    
+    <div style="text-align: center; display: none;" id="exportContainer">
+        <button class="btn-success" onclick="exportExcel()"><i class="fa-solid fa-file-excel"></i> TẢI BÁO CÁO EXCEL</button>
+    </div>
+
+    <!-- FOOTER CHI NHÁNH -->
+    <div class="footer-grid">
+        <div class="footer-card main-hq">
+            <strong>🏢 TRỤ SỞ CHÍNH</strong>
+            <p>📍 Số 34, đường 3C, KDC Nam Hùng Vương, Phường An Lạc, TP.HCM</p>
+        </div>
+        <div class="footer-card">
+            <strong>🏭 CHI NHÁNH TẠI LONG AN</strong>
+            <p>📍 Kho K2-2, KCN Tân Kim mở rộng, Xã Cần Giuộc, Tây Ninh</p>
+        </div>
+        <div class="footer-card">
+            <strong>🏭 CHI NHÁNH 2 LONG AN</strong>
+            <p>📍 Lô R24-R25 ĐS 8, KCN Hải sơn mở rộng, Xã Đức Hòa, Tây Ninh</p>
+        </div>
+        <div class="footer-card">
+            <strong>🏭 CHI NHÁNH 3 LONG AN</strong>
+            <p>📍 Lô R9 & R10 ĐS 9, KCN Hải Sơn mở rộng, Xã Đức Hòa, Tây Ninh</p>
+        </div>
+        <div class="footer-card">
+            <strong>🏭 CHI NHÁNH 04 LONG AN</strong>
+            <p>📍 Lô H9A-H10, Đường N3, KCN Nam Thuận, Xã Mỹ Hạnh, Tây Ninh</p>
+        </div>
+        <div class="footer-card">
+            <strong>🏭 CHI NHÁNH 05</strong>
+            <p>📍 Lô H11, Đường N3, KCN Nam Thuận, Xã Mỹ Hạnh, Tây Ninh</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    let pdfFiles = [];
+    let finalDataOut = [];
+    const terminal = document.getElementById('terminalLog');
+    
+    function log(msg) {
+        terminal.innerHTML += msg + "<br>";
+        terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    window.onload = async () => {
+        let res = await fetch('/api/config');
+        let data = await res.json();
+        if(data.api_key) document.getElementById('apiKey').value = data.api_key;
+    }
+
+    async function scanModels() {
+        const apiKey = document.getElementById('apiKey').value;
+        if (!apiKey) return alert("Vui lòng nhập API Key!");
+        
+        log("> Đang quét hệ thống AI của Google...");
+        await fetch('/api/config', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({api_key: apiKey}) });
+        
+        try {
+            let res = await fetch('/api/scan_models', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({api_key: apiKey}) });
+            let data = await res.json();
+            
+            if (data.status === "success") {
+                let sel = document.getElementById('modelSelect');
+                sel.innerHTML = "";
+                data.models.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
+                log(`> ✅ Quét thành công! Đã nạp ${data.models.length} model.`);
+                checkReady();
+            } else {
+                log(`> ❌ Lỗi API: ${data.message}`);
+                alert("Lỗi cấu hình API. Vui lòng kiểm tra lại Key!");
+            }
+        } catch (e) {
+            log(`> ❌ Lỗi kết nối máy chủ Flask.`);
+        }
+    }
+
+    function handleFolderSelect(e) {
+        const files = Array.from(e.target.files);
+        pdfFiles = files.filter(f => f.name.toLowerCase().endsWith('.pdf'));
+        
+        if(pdfFiles.length > 0) {
+            document.getElementById('folderText').innerHTML = `<b style="color:var(--success)">Đã tải thư mục thành công! Nhận diện ${pdfFiles.length} file PDF.</b>`;
+            log(`> 📁 Đã nạp ${pdfFiles.length} file PDF vào hệ thống.`);
+        } else {
+            document.getElementById('folderText').innerHTML = `<b style="color:var(--danger)">Không tìm thấy file PDF nào trong thư mục này!</b>`;
+            pdfFiles = [];
+        }
+        checkReady();
+    }
+
+    function checkReady() {
+        if (pdfFiles.length > 0 && document.getElementById('modelSelect').value !== "") {
+            document.getElementById('btnStart').disabled = false;
+        } else {
+            document.getElementById('btnStart').disabled = true;
+        }
+    }
+
+    async function startExtraction() {
+        document.getElementById('btnStart').disabled = true;
+        const apiKey = document.getElementById('apiKey').value;
+        const model = document.getElementById('modelSelect').value;
+        
+        document.getElementById('tableContainer').style.display = 'block';
+        document.getElementById('tableBody').innerHTML = '';
+        finalDataOut = [];
+        let filesToRetry = [];
+        let globalStt = 1;
+        
+        log(`\n================================`);
+        log(`> Kích hoạt Động cơ: ${model}`);
+        log(`> Bắt đầu xử lý ${pdfFiles.length} file...\n`);
+        
+        for(let i=0; i < pdfFiles.length; i++) {
+            let file = pdfFiles[i];
+            log(`[${i+1}/${pdfFiles.length}] Đang phân tích: ${file.name}...`);
+            document.getElementById('progressBar').style.width = `${((i+1)/pdfFiles.length)*100}%`;
+            
+            let result = await processSingleFile(file, apiKey, model);
+            
+            if (result.status === "success") {
+                log(`   -> XONG: ${result.data.Ten_San_Pham || 'N/A'}`);
+                globalStt = addResultToTable(result.data, file.name, globalStt);
+            } else if (result.status === "overloaded") {
+                log(`   -> ⚠️ Tạm bỏ qua do quá tải. Đưa vào danh sách chờ.`);
+                filesToRetry.push({file: file, originalStt: globalStt});
+                globalStt++;
+            } else {
+                log(`   -> ❌ LỖI: ${result.message}`);
+                addErrorToTable(file.name, "Lỗi đọc file", result.message, globalStt);
+                globalStt++;
+            }
+        }
+        
+        if (filesToRetry.length > 0) {
+            log(`\n================================`);
+            log(`🔄 Hệ thống nghỉ 5s trước khi quét lại ${filesToRetry.length} file bị nghẽn mạng...`);
+            await new Promise(r => setTimeout(r, 5000));
+            
+            for(let i=0; i < filesToRetry.length; i++) {
+                let item = filesToRetry[i];
+                log(`[VÒNG 2 - ${i+1}/${filesToRetry.length}] Quét lại: ${item.file.name}...`);
+                
+                let result = await processSingleFile(item.file, apiKey, model);
+                if (result.status === "success") {
+                    log(`   -> THÀNH CÔNG Ở VÒNG 2!`);
+                    addResultToTable(result.data, item.file.name, item.originalStt); 
+                } else {
+                    log(`   -> ❌ THẤT BẠI: Vẫn bị quá tải.`);
+                    addErrorToTable(item.file.name, "⚠️ Bị bỏ qua", "Hệ thống Google liên tục từ chối", item.originalStt);
+                }
+            }
+        }
+        
+        log(`\n✨ HOÀN TẤT TOÀN BỘ QUÁ TRÌNH!`);
+        document.getElementById('exportContainer').style.display = 'block';
+        document.getElementById('btnStart').disabled = false;
+        
+        finalDataOut.sort((a, b) => a._STT - b._STT);
+    }
+
+    async function processSingleFile(file, apiKey, modelName) {
+        let formData = new FormData();
+        formData.append("file", file);
+        formData.append("api_key", apiKey);
+        formData.append("model", modelName);
+        
+        try {
+            let res = await fetch('/api/analyze', { method: 'POST', body: formData });
+            let json = await res.json();
+            return json;
+        } catch(e) {
+            return {status: "error", message: "Mất kết nối với máy chủ nội bộ."};
+        }
+    }
+
+    function addResultToTable(data, filename, stt) {
+        let tbody = document.getElementById('tableBody');
+        let sp = data.Ten_San_Pham || "N/A";
+        let tps = data.Thanh_Phan || [];
+        
+        if (tps.length === 0) tps = [{Ten_Chat: "Không tìm thấy", Ma_CAS: "N/A"}];
+        
+        tps.forEach((tp, idx) => {
+            let tr = document.createElement('tr');
+            if(idx === 0) tr.className = "row-group";
+            
+            let htmlStt = idx === 0 ? `<b style="color:var(--primary-dark)">${stt}</b>` : "";
+            let htmlFile = idx === 0 ? `<b>${filename}</b>` : "";
+            let htmlSp = idx === 0 ? sp : "";
+            
+            tr.innerHTML = `
+                <td style="text-align:center;">${htmlStt}</td>
+                <td>${htmlFile}</td>
+                <td style="color: var(--dark); font-weight: 500;">${htmlSp}</td>
+                <td>${tp.Ten_Chat || ''}</td>
+                <td style="font-family: monospace; font-size:14px; font-weight:700;">${tp.Ma_CAS || ''}</td>
+            `;
+            tbody.appendChild(tr);
+            
+            finalDataOut.push({
+                _STT: stt,
+                "STT": idx === 0 ? stt : "",
+                "Tên File": idx === 0 ? filename : "",
+                "Sản Phẩm": idx === 0 ? sp : "",
+                "Thành Phần": tp.Ten_Chat || "",
+                "Mã CAS": tp.Ma_CAS || ""
+            });
+        });
+        return stt + 1;
+    }
+
+    function addErrorToTable(filename, sp_error, reason, stt) {
+        let tbody = document.getElementById('tableBody');
+        let tr = document.createElement('tr');
+        tr.className = "row-group";
+        tr.style.backgroundColor = "#fef2f2";
+        tr.innerHTML = `
+            <td style="text-align:center;"><b style="color:var(--danger)">${stt}</b></td>
+            <td><b>${filename}</b></td>
+            <td style="color:var(--danger); font-weight:700;">${sp_error}</td>
+            <td colspan="2" style="color:var(--gray); font-style:italic;">Lý do: ${reason}</td>
+        `;
+        tbody.appendChild(tr);
+        
+        finalDataOut.push({
+            _STT: stt,
+            "STT": stt,
+            "Tên File": filename,
+            "Sản Phẩm": sp_error,
+            "Thành Phần": reason,
+            "Mã CAS": "-"
+        });
+    }
+
+    function exportExcel() {
+        let exportData = finalDataOut.map(row => {
+            let newRow = {...row};
+            delete newRow._STT;
+            return newRow;
+        });
+        
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        ws['!cols'] = [{wch: 6}, {wch: 35}, {wch: 35}, {wch: 40}, {wch: 20}];
+        XLSX.utils.book_append_sheet(wb, ws, "Ket_Qua");
+        XLSX.writeFile(wb, "Vietchem_Data_MSDS.xlsx");
+    }
+</script>
+
+</body>
+</html>
