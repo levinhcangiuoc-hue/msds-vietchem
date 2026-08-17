@@ -7,7 +7,7 @@ import time
 import traceback
 
 app = Flask(__name__, static_folder='.', static_url_path='')
-# Tăng giới hạn dung lượng tải lên 100MB cho chắc chắn
+# Tăng giới hạn dung lượng tải lên 100MB
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  
 
 CONFIG_FILE = "config.json"
@@ -67,13 +67,12 @@ def analyze():
         if not file or not api_key or not model_name:
             return jsonify({"status": "error", "message": "Thiếu thông tin yêu cầu từ trình duyệt."})
 
-        # --- ĐÂY LÀ DÒNG CODE ĐÃ SỬA LỖI ---
-        # Gọt bỏ toàn bộ đường dẫn thư mục, chỉ giữ lại đúng tên file (VD: 157791.pdf)
-        filename = os.path.basename(file.filename.replace('\\', '/'))
-        if not filename:
-            filename = f"temp_{int(time.time())}.pdf"
-            
-        fpath = os.path.join(TEMP_DIR, filename)
+        # ==========================================
+        # 1. KHẮC PHỤC LỖI TÊN FILE TIẾNG VIỆT
+        # ==========================================
+        # Tự động tạo tên file tạm thời an toàn (chỉ chứa số)
+        safe_filename = f"msds_{int(time.time() * 1000)}.pdf"
+        fpath = os.path.join(TEMP_DIR, safe_filename)
         file.save(fpath)
         
         client = genai.Client(api_key=api_key)
@@ -82,9 +81,13 @@ def analyze():
 2. Thành Phần & Mã CAS (Mục 3).
 Format bắt buộc: {"Ten_San_Pham": "...", "Thanh_Phan": [{"Ten_Chat": "...", "Ma_CAS": "..."}]}"""
 
+        # Upload file lên Google
         tai_lieu = client.files.upload(file=fpath)
         time.sleep(2) 
         
+        # ==========================================
+        # 2. KHẮC PHỤC LỖI NGHẼN MẠNG (ÉP QUA VÒNG 2)
+        # ==========================================
         for lan in range(1, 4):
             try:
                 response = client.models.generate_content(
@@ -105,21 +108,22 @@ Format bắt buộc: {"Ten_San_Pham": "...", "Thanh_Phan": [{"Ten_Chat": "...", 
                     return jsonify({"status": "error", "message": f"AI trả về sai định dạng JSON. Phản hồi gốc: {raw}"})
                     
             except Exception as e:
-                err = str(e)
-                if any(x in err for x in ["503", "429", "ResourceExhausted", "Quota"]):
-                    if lan == 3: 
-                        return jsonify({"status": "overloaded", "message": "Hệ thống Google bận (Đã thử 3 lần)"})
-                    time.sleep(3 * lan)
-                else:
-                    return jsonify({"status": "error", "message": f"Lỗi từ Google: {err}"})
-                    
+                # Nếu gặp BẤT KỲ lỗi gì từ Google, ép thử lại 3 lần
+                if lan == 3: 
+                    # Sau 3 lần vẫn lỗi -> Đẩy vào trạng thái "overloaded" để Web cho vào VÒNG 2
+                    return jsonify({"status": "overloaded", "message": f"Google đang quá tải: {str(e)}"})
+                
+                time.sleep(3 * lan) # Nghỉ ngơi trước khi thử lại
+                
         return jsonify({"status": "overloaded", "message": "Google từ chối do quá tải"})
         
     except Exception as e:
+        # Bắt các lỗi sập hệ thống (Crash)
         traceback.print_exc()
         return jsonify({"status": "error", "message": f"Lỗi Hệ thống Python: {str(e)}"})
         
     finally:
+        # Dọn dẹp rác
         if tai_lieu and client:
             try: client.files.delete(name=tai_lieu.name)
             except: pass
