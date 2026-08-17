@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hệ thống Tra cứu MSDS Pro - VIETCHEM</title>
     <!-- Thư viện xuất Excel -->
-    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="[https://unpkg.com/xlsx/dist/xlsx.full.min.js](https://unpkg.com/xlsx/dist/xlsx.full.min.js)"></script>
+    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap)" rel="stylesheet">
+    <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">
     
     <style>
         :root {
@@ -81,36 +81,22 @@
         .footer-card strong { display: flex; align-items: center; gap: 6px; color: var(--dark); margin-bottom: 6px; font-size: 13px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 6px; letter-spacing: 0.5px; }
         .footer-card p { display: flex; align-items: flex-start; gap: 6px; margin: 0; font-size: 13px; font-weight: 500; color: #475569; line-height: 1.4; }
         
-        /* ==============================================
-           📱 CSS ĐỘC QUYỀN TỐI ƯU CHO ĐIỆN THOẠI
-           ============================================== */
+        /* TỐI ƯU ĐIỆN THOẠI */
         @media (max-width: 768px) {
             body { padding: 10px; }
             .container { padding: 20px 15px; }
-            
-            /* Thu gọn phần Logo và Tên công ty */
             .brand-header { flex-direction: column; text-align: center; gap: 12px; padding-bottom: 15px; margin-bottom: 15px; }
             .brand-header img { height: 60px; }
-            
-            /* Tinh chỉnh cỡ chữ Panel & Tiêu đề */
             .header-title { font-size: 18px; margin-bottom: 15px; }
             .panel { padding: 15px; margin-bottom: 15px; }
             .panel-title { font-size: 15px; margin-bottom: 12px; }
-            
-            /* Xếp dọc lại cấu hình API */
             .grid-3 { grid-template-columns: 1fr; gap: 10px; }
             input[type="password"], select { font-size: 14px; padding: 10px 12px; }
-            
-            /* Tinh chỉnh khu vực nút bấm & Tải lên */
             .upload-wrapper { padding: 15px; }
             .upload-wrapper i { font-size: 30px; }
             .upload-wrapper p { font-size: 14px; }
             .btn-primary, .btn-secondary, .btn-success { font-size: 14px; padding: 12px; }
-            
-            /* Thu nhỏ khu vực Terminal */
             .terminal { height: 180px; font-size: 12px; padding: 12px; line-height: 1.4; }
-            
-            /* Thu gọn Footer */
             .footer-grid { grid-template-columns: 1fr; gap: 10px; margin-top: 25px; padding-top: 15px; }
         }
     </style>
@@ -128,20 +114,17 @@
 
     <h2 class="header-title"><i class="fa-solid fa-shield-halved"></i> BẢNG ĐIỀU KHIỂN TRÍCH XUẤT</h2>
 
-    <!-- BẢNG CẤU HÌNH API -->
     <div class="panel">
         <h3 class="panel-title"><i class="fa-solid fa-gear"></i> 1. Cấu hình Kết nối AI</h3>
         <div class="grid-3">
             <input type="password" id="apiKey" placeholder="Nhập Google API Key...">
             <button class="btn-secondary" onclick="scanModels()"><i class="fa-solid fa-rotate"></i> Quét Model</button>
             <select id="modelSelect">
-                <!-- ĐÃ ĐỔI CHỮ THEO YÊU CẦU -->
                 <option value="">-- Chọn Model --</option>
             </select>
         </div>
     </div>
 
-    <!-- TẢI THƯ MỤC -->
     <div class="panel">
         <h3 class="panel-title"><i class="fa-solid fa-folder-open"></i> 2. Chọn Nguồn Dữ Liệu</h3>
         <input type="file" id="folderInput" webkitdirectory directory multiple accept="application/pdf" style="display: none;" onchange="handleFolderSelect(event)">
@@ -152,7 +135,6 @@
         </div>
     </div>
 
-    <!-- NÚT BẮT ĐẦU -->
     <button id="btnStart" class="btn-primary" onclick="startExtraction()" disabled>
         <i class="fa-solid fa-rocket"></i> BẮT ĐẦU TRÍCH XUẤT DỮ LIỆU
     </button>
@@ -162,7 +144,6 @@
         <div class="terminal" id="terminalLog">> Hệ thống sẵn sàng... Mời cấu hình API và tải thư mục.<br></div>
     </div>
 
-    <!-- BẢNG KẾT QUẢ (VUỐT NGANG TRÊN ĐIỆN THOẠI) -->
     <div class="table-responsive" id="tableContainer">
         <table id="resultTable">
             <thead>
@@ -182,7 +163,6 @@
         <button class="btn-success" onclick="exportExcel()"><i class="fa-solid fa-file-excel"></i> TẢI BÁO CÁO EXCEL</button>
     </div>
 
-    <!-- FOOTER CHI NHÁNH -->
     <div class="footer-grid">
         <div class="footer-card main-hq">
             <strong>🏢 TRỤ SỞ CHÍNH</strong>
@@ -240,7 +220,7 @@
             
             if (data.status === "success") {
                 let sel = document.getElementById('modelSelect');
-                sel.innerHTML = '<option value="">-- Chọn Model --</option>'; // Đồng bộ chữ ở Script
+                sel.innerHTML = '<option value="">-- Chọn Model --</option>'; 
                 data.models.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
                 log(`> ✅ Quét thành công! Đã nạp ${data.models.length} model.`);
                 checkReady();
@@ -290,6 +270,9 @@
         log(`> Kích hoạt Model: ${model}`);
         log(`> Bắt đầu xử lý ${pdfFiles.length} file...\n`);
         
+        // ==========================================
+        // VÒNG QUÉT 1
+        // ==========================================
         for(let i=0; i < pdfFiles.length; i++) {
             let file = pdfFiles[i];
             log(`[${i+1}/${pdfFiles.length}] Đang phân tích: ${file.name}...`);
@@ -311,6 +294,9 @@
             }
         }
         
+        // ==========================================
+        // VÒNG QUÉT 2 (QUAY LẠI FILE NGHẼN MẠNG)
+        // ==========================================
         if (filesToRetry.length > 0) {
             log(`\n================================`);
             log(`🔄 Hệ thống nghỉ 5s trước khi quét lại ${filesToRetry.length} file bị nghẽn mạng...`);
@@ -335,6 +321,7 @@
         document.getElementById('exportContainer').style.display = 'block';
         document.getElementById('btnStart').disabled = false;
         
+        // Sắp xếp lại dữ liệu theo số thứ tự (STT) để tránh lộn xộn sau Vòng 2
         finalDataOut.sort((a, b) => a._STT - b._STT);
     }
 
