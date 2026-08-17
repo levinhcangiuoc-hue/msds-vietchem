@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hệ thống Tra cứu MSDS Pro - VIETCHEM</title>
-    <!-- Thư viện xuất Excel -->
-    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="[https://unpkg.com/xlsx/dist/xlsx.full.min.js](https://unpkg.com/xlsx/dist/xlsx.full.min.js)"></script>
+    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap)" rel="stylesheet">
+    <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">
     
     <style>
         :root {
@@ -18,17 +17,11 @@
         
         body { 
             font-family: 'Inter', system-ui, -apple-system, sans-serif; 
-            color: var(--dark); 
-            background-color: #f1f5f9; 
-            margin: 0; 
-            padding: 20px; 
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            color: var(--dark); background-color: #f1f5f9; margin: 0; padding: 20px; min-height: 100vh;
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
         }
         .container { max-width: 1350px; margin: auto; background: #ffffff; padding: 35px 40px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
         
-        /* HEADER */
         .brand-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--primary); padding-bottom: 20px; margin-bottom: 25px; }
         .brand-header img { height: 80px; object-fit: contain; }
         .brand-text-container { display: flex; flex-direction: column; justify-content: center; }
@@ -37,7 +30,6 @@
         
         .header-title { text-align: center; font-weight: 800; font-size: 22px; color: var(--dark); margin-bottom: 25px; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        /* PANELS */
         .panel { background: var(--light); border: 1px solid var(--border); border-radius: 8px; padding: 20px 25px; margin-bottom: 20px; }
         .panel-title { margin-top: 0; color: var(--dark); font-size: 16px; margin-bottom: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         .grid-3 { display: grid; grid-template-columns: 2fr 1fr 2fr; gap: 15px; align-items: center; }
@@ -48,7 +40,6 @@
         }
         input[type="password"]:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30,64,175,0.15); }
         
-        /* CẬP NHẬT GIAO DIỆN CHỌN FILE/THƯ MỤC */
         .upload-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         .upload-box { border: 2px dashed var(--border); background: #ffffff; padding: 20px; text-align: center; border-radius: 8px; cursor: pointer; transition: 0.2s; }
         .upload-box:hover { border-color: var(--primary); background: #eff6ff; }
@@ -56,7 +47,6 @@
         .upload-box p { font-size: 15px; font-weight: 600; color: var(--dark); margin: 0; }
         .upload-status { text-align: center; font-size: 14px; font-weight: 600; padding: 12px; border-radius: 6px; background: #ffffff; border: 1px solid var(--border); display: none; }
         
-        /* BUTTONS */
         button { font-family: 'Inter', sans-serif; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 15px; font-weight: 700; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
         button:hover:not(:disabled) { transform: translateY(-1px); opacity: 0.9; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -64,26 +54,22 @@
         .btn-secondary { background: var(--dark); color: white; width: 100%; }
         .btn-success { background: var(--success); color: white; padding: 14px 30px; font-size: 15px; width: 100%; }
         
-        /* TERMINAL (TIẾN TRÌNH) */
         .terminal { background: #090d16; color: #34d399; font-family: 'Courier New', Courier, monospace; padding: 15px; border-radius: 6px; height: 240px; overflow-y: auto; margin-bottom: 25px; font-size: 14px; font-weight: 600; line-height: 1.6; white-space: pre-wrap;}
         .progress-bar-container { background: #e2e8f0; border-radius: 4px; height: 10px; overflow: hidden; margin-bottom: 15px; }
         .progress-bar { background: var(--success); height: 100%; width: 0%; transition: width 0.3s; }
         
-        /* TABLE TỐI ƯU CUỘN NGANG CHO MOBILE */
         .table-responsive { overflow-x: auto; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 6px; display: none; -webkit-overflow-scrolling: touch; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
         th { background: var(--dark); color: white; padding: 14px 12px; text-align: left; font-size: 13px; font-weight: 700; position: sticky; top: 0; text-transform: uppercase; letter-spacing: 0.5px;}
         td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--dark); font-weight: 400;}
         .row-group td { border-top: 2px solid #94a3b8; }
         
-        /* FOOTER */
         .footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 40px; padding-top: 25px; border-top: 2px solid var(--border); }
         .footer-card { background: var(--light); padding: 15px; border-radius: 6px; border: 1px solid var(--border); border-left: 3px solid #64748b; }
         .footer-card.main-hq { border-left-color: var(--primary); background: #f0f9ff; }
         .footer-card strong { display: flex; align-items: center; gap: 6px; color: var(--dark); margin-bottom: 6px; font-size: 13px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 6px; letter-spacing: 0.5px; }
         .footer-card p { display: flex; align-items: flex-start; gap: 6px; margin: 0; font-size: 13px; font-weight: 500; color: #475569; line-height: 1.4; }
         
-        /* TỐI ƯU ĐIỆN THOẠI */
         @media (max-width: 768px) {
             body { padding: 10px; }
             .container { padding: 20px 15px; }
@@ -94,7 +80,6 @@
             .panel-title { font-size: 15px; margin-bottom: 12px; }
             .grid-3 { grid-template-columns: 1fr; gap: 10px; }
             input[type="password"], select { font-size: 14px; padding: 10px 12px; }
-            /* Cập nhật mobile cho 2 nút tải lên */
             .upload-actions { grid-template-columns: 1fr; gap: 10px; }
             .upload-box { padding: 15px; }
             .upload-box i { font-size: 28px; }
@@ -129,13 +114,10 @@
         </div>
     </div>
 
-    <!-- KHU VỰC TẢI DỮ LIỆU ĐÃ ĐƯỢC NÂNG CẤP -->
     <div class="panel">
         <h3 class="panel-title"><i class="fa-solid fa-file-arrow-up"></i> 2. Chọn Nguồn Dữ Liệu</h3>
         
-        <!-- Input 1: Cho phép tải nhiều file lẻ -->
         <input type="file" id="fileInput" multiple accept="application/pdf" style="display: none;" onchange="handleDataSelect(event)">
-        <!-- Input 2: Cho phép tải nguyên thư mục -->
         <input type="file" id="folderInput" webkitdirectory directory multiple accept="application/pdf" style="display: none;" onchange="handleDataSelect(event)">
         
         <div class="upload-actions">
@@ -170,6 +152,7 @@
                     <th>Sản Phẩm</th>
                     <th>Thành Phần (Chất)</th>
                     <th>Mã CAS</th>
+                    <th>Nồng Độ</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -181,30 +164,12 @@
     </div>
 
     <div class="footer-grid">
-        <div class="footer-card main-hq">
-            <strong>🏢 TRỤ SỞ CHÍNH</strong>
-            <p>📍 Số 34, đường 3C, KDC Nam Hùng Vương, Phường An Lạc, TP.HCM</p>
-        </div>
-        <div class="footer-card">
-            <strong>🏭 CHI NHÁNH TẠI LONG AN</strong>
-            <p>📍 Kho K2-2, KCN Tân Kim mở rộng, Xã Cần Giuộc, Tây Ninh</p>
-        </div>
-        <div class="footer-card">
-            <strong>🏭 CHI NHÁNH 2 LONG AN</strong>
-            <p>📍 Lô R24-R25 ĐS 8, KCN Hải sơn mở rộng, Xã Đức Hòa, Tây Ninh</p>
-        </div>
-        <div class="footer-card">
-            <strong>🏭 CHI NHÁNH 3 LONG AN</strong>
-            <p>📍 Lô R9 & R10 ĐS 9, KCN Hải Sơn mở rộng, Xã Đức Hòa, Tây Ninh</p>
-        </div>
-        <div class="footer-card">
-            <strong>🏭 CHI NHÁNH 04 LONG AN</strong>
-            <p>📍 Lô H9A-H10, Đường N3, KCN Nam Thuận, Xã Mỹ Hạnh, Tây Ninh</p>
-        </div>
-        <div class="footer-card">
-            <strong>🏭 CHI NHÁNH 05</strong>
-            <p>📍 Lô H11, Đường N3, KCN Nam Thuận, Xã Mỹ Hạnh, Tây Ninh</p>
-        </div>
+        <div class="footer-card main-hq"><strong>🏢 TRỤ SỞ CHÍNH</strong><p>📍 Số 34, đường 3C, KDC Nam Hùng Vương, P. An Lạc, TP.HCM</p></div>
+        <div class="footer-card"><strong>🏭 CHI NHÁNH TẠI LONG AN</strong><p>📍 Kho K2-2, KCN Tân Kim mở rộng, Xã Cần Giuộc, Tây Ninh</p></div>
+        <div class="footer-card"><strong>🏭 CHI NHÁNH 2 LONG AN</strong><p>📍 Lô R24-R25 ĐS 8, KCN Hải sơn mở rộng, Xã Đức Hòa, Tây Ninh</p></div>
+        <div class="footer-card"><strong>🏭 CHI NHÁNH 3 LONG AN</strong><p>📍 Lô R9 & R10 ĐS 9, KCN Hải Sơn mở rộng, Xã Đức Hòa, Tây Ninh</p></div>
+        <div class="footer-card"><strong>🏭 CHI NHÁNH 04 LONG AN</strong><p>📍 Lô H9A-H10, Đường N3, KCN Nam Thuận, Xã Mỹ Hạnh, Tây Ninh</p></div>
+        <div class="footer-card"><strong>🏭 CHI NHÁNH 05</strong><p>📍 Lô H11, Đường N3, KCN Nam Thuận, Xã Mỹ Hạnh, Tây Ninh</p></div>
     </div>
 </div>
 
@@ -213,10 +178,7 @@
     let finalDataOut = [];
     const terminal = document.getElementById('terminalLog');
     
-    function log(msg) {
-        terminal.innerHTML += msg + "<br>";
-        terminal.scrollTop = terminal.scrollHeight;
-    }
+    function log(msg) { terminal.innerHTML += msg + "<br>"; terminal.scrollTop = terminal.scrollHeight; }
 
     window.onload = async () => {
         let res = await fetch('/api/config');
@@ -250,7 +212,6 @@
         }
     }
 
-    // HÀM MỚI CHUNG CHO CẢ CHỌN FILE VÀ CHỌN THƯ MỤC
     function handleDataSelect(e) {
         const files = Array.from(e.target.files);
         pdfFiles = files.filter(f => f.name.toLowerCase().endsWith('.pdf'));
@@ -266,10 +227,8 @@
             pdfFiles = [];
         }
         
-        // Reset lại input để có thể chọn lại cùng 1 file nếu cần
         document.getElementById('fileInput').value = "";
         document.getElementById('folderInput').value = "";
-        
         checkReady();
     }
 
@@ -296,7 +255,9 @@
         log(`> Kích hoạt Model: ${model}`);
         log(`> Bắt đầu xử lý ${pdfFiles.length} file...\n`);
         
+        // ==========================================
         // VÒNG QUÉT 1
+        // ==========================================
         for(let i=0; i < pdfFiles.length; i++) {
             let file = pdfFiles[i];
             log(`[${i+1}/${pdfFiles.length}] Đang phân tích: ${file.name}...`);
@@ -305,23 +266,23 @@
             let result = await processSingleFile(file, apiKey, model);
             
             if (result.status === "success") {
-                log(`   -> XONG: ${result.data.Ten_San_Pham || 'N/A'}`);
+                log(`   -> ✅ XONG: ${result.data.Ten_San_Pham || 'N/A'}`);
                 globalStt = addResultToTable(result.data, file.name, globalStt);
-            } else if (result.status === "overloaded") {
-                log(`   -> ⚠️ Tạm bỏ qua do quá tải. Đưa vào danh sách chờ.`);
-                filesToRetry.push({file: file, originalStt: globalStt});
-                globalStt++;
             } else {
-                log(`   -> ❌ LỖI: ${result.message}`);
-                addErrorToTable(file.name, "Lỗi đọc file", result.message, globalStt);
+                // SỬA ĐỔI QUAN TRỌNG: Mọi lỗi (mất kết nối, sập server, Google báo lỗi...) đều ném hết vào Vòng 2
+                log(`   -> ⚠️ LỖI: ${result.message}`);
+                log(`   -> Đưa vào danh sách chờ để quét lại ở Vòng 2...`);
+                filesToRetry.push({file: file, originalStt: globalStt});
                 globalStt++;
             }
         }
         
-        // VÒNG QUÉT 2
+        // ==========================================
+        // VÒNG QUÉT 2 (QUÉT TẤT CẢ CÁC FILE LỖI)
+        // ==========================================
         if (filesToRetry.length > 0) {
             log(`\n================================`);
-            log(`🔄 Hệ thống nghỉ 5s trước khi quét lại ${filesToRetry.length} file bị nghẽn mạng...`);
+            log(`🔄 HỆ THỐNG NGHỈ 5S TRƯỚC KHI QUÉT LẠI ${filesToRetry.length} FILE BỊ LỖI...`);
             await new Promise(r => setTimeout(r, 5000));
             
             for(let i=0; i < filesToRetry.length; i++) {
@@ -330,11 +291,12 @@
                 
                 let result = await processSingleFile(item.file, apiKey, model);
                 if (result.status === "success") {
-                    log(`   -> THÀNH CÔNG Ở VÒNG 2!`);
+                    log(`   -> ✅ THÀNH CÔNG Ở VÒNG 2!`);
                     addResultToTable(result.data, item.file.name, item.originalStt); 
                 } else {
-                    log(`   -> ❌ THẤT BẠI: Vẫn bị quá tải.`);
-                    addErrorToTable(item.file.name, "⚠️ Bị bỏ qua", "Hệ thống Google liên tục từ chối", item.originalStt);
+                    // Nếu vòng 2 vẫn lỗi thì mới ghi nhận là thất bại hoàn toàn
+                    log(`   -> ❌ THẤT BẠI TẠI VÒNG 2: ${result.message}`);
+                    addErrorToTable(item.file.name, "Không thể phân tích", result.message, item.originalStt);
                 }
             }
         }
@@ -354,9 +316,10 @@
         
         try {
             let res = await fetch('/api/analyze', { method: 'POST', body: formData });
-            let json = await res.json();
-            return json;
+            return await res.json();
         } catch(e) {
+            // Lỗi khi sập server hoặc rớt mạng sẽ trả về status "error", 
+            // và đoạn code bên trên sẽ tự động hiểu là đẩy vào Vòng 2
             return {status: "error", message: "Mất kết nối với máy chủ nội bộ."};
         }
     }
@@ -366,7 +329,7 @@
         let sp = data.Ten_San_Pham || "N/A";
         let tps = data.Thanh_Phan || [];
         
-        if (tps.length === 0) tps = [{Ten_Chat: "Không tìm thấy", Ma_CAS: "N/A"}];
+        if (tps.length === 0) tps = [{Ten_Chat: "Không tìm thấy", Ma_CAS: "N/A", Nong_Do: "N/A"}];
         
         tps.forEach((tp, idx) => {
             let tr = document.createElement('tr');
@@ -382,6 +345,7 @@
                 <td style="color: var(--dark); font-weight: 500;">${htmlSp}</td>
                 <td>${tp.Ten_Chat || ''}</td>
                 <td style="font-family: monospace; font-size:14px; font-weight:700;">${tp.Ma_CAS || ''}</td>
+                <td style="color: var(--success); font-weight: 600;">${tp.Nong_Do || ''}</td>
             `;
             tbody.appendChild(tr);
             
@@ -391,7 +355,8 @@
                 "Tên File": idx === 0 ? filename : "",
                 "Sản Phẩm": idx === 0 ? sp : "",
                 "Thành Phần": tp.Ten_Chat || "",
-                "Mã CAS": tp.Ma_CAS || ""
+                "Mã CAS": tp.Ma_CAS || "",
+                "Nồng Độ": tp.Nong_Do || ""
             });
         });
         return stt + 1;
@@ -406,7 +371,7 @@
             <td style="text-align:center;"><b style="color:var(--danger)">${stt}</b></td>
             <td><b>${filename}</b></td>
             <td style="color:var(--danger); font-weight:700;">${sp_error}</td>
-            <td colspan="2" style="color:var(--gray); font-style:italic;">Lý do: ${reason}</td>
+            <td colspan="3" style="color:var(--gray); font-style:italic;">Lý do: ${reason}</td>
         `;
         tbody.appendChild(tr);
         
@@ -416,7 +381,8 @@
             "Tên File": filename,
             "Sản Phẩm": sp_error,
             "Thành Phần": reason,
-            "Mã CAS": "-"
+            "Mã CAS": "-",
+            "Nồng Độ": "-"
         });
     }
 
@@ -429,7 +395,7 @@
         
         const ws = XLSX.utils.json_to_sheet(exportData);
         const wb = XLSX.utils.book_new();
-        ws['!cols'] = [{wch: 6}, {wch: 35}, {wch: 35}, {wch: 40}, {wch: 20}];
+        ws['!cols'] = [{wch: 6}, {wch: 35}, {wch: 35}, {wch: 40}, {wch: 15}, {wch: 15}];
         XLSX.utils.book_append_sheet(wb, ws, "Ket_Qua");
         XLSX.writeFile(wb, "Vietchem_Data_MSDS.xlsx");
     }
