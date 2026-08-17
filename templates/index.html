@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hệ thống Tra cứu MSDS Pro - VIETCHEM</title>
     <!-- Thư viện xuất Excel -->
-    <script src="[https://unpkg.com/xlsx/dist/xlsx.full.min.js](https://unpkg.com/xlsx/dist/xlsx.full.min.js)"></script>
-    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap)" rel="stylesheet">
-    <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
@@ -48,6 +48,14 @@
         }
         input[type="password"]:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30,64,175,0.15); }
         
+        /* CẬP NHẬT GIAO DIỆN CHỌN FILE/THƯ MỤC */
+        .upload-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .upload-box { border: 2px dashed var(--border); background: #ffffff; padding: 20px; text-align: center; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .upload-box:hover { border-color: var(--primary); background: #eff6ff; }
+        .upload-box i { font-size: 32px; color: var(--primary); margin-bottom: 10px; }
+        .upload-box p { font-size: 15px; font-weight: 600; color: var(--dark); margin: 0; }
+        .upload-status { text-align: center; font-size: 14px; font-weight: 600; padding: 12px; border-radius: 6px; background: #ffffff; border: 1px solid var(--border); display: none; }
+        
         /* BUTTONS */
         button { font-family: 'Inter', sans-serif; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 15px; font-weight: 700; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
         button:hover:not(:disabled) { transform: translateY(-1px); opacity: 0.9; }
@@ -55,12 +63,6 @@
         .btn-primary { background: var(--primary); color: white; width: 100%; padding: 16px; font-size: 16px; box-shadow: 0 4px 6px rgba(30,64,175,0.2); margin-top: 5px;}
         .btn-secondary { background: var(--dark); color: white; width: 100%; }
         .btn-success { background: var(--success); color: white; padding: 14px 30px; font-size: 15px; width: 100%; }
-        
-        /* UPLOAD THƯ MỤC */
-        .upload-wrapper { border: 2px dashed var(--border); background: #ffffff; padding: 25px; text-align: center; border-radius: 8px; cursor: pointer; transition: 0.2s; margin-bottom: 10px;}
-        .upload-wrapper:hover { border-color: var(--primary); background: #eff6ff; }
-        .upload-wrapper i { font-size: 36px; color: var(--primary); margin-bottom: 8px; }
-        .upload-wrapper p { font-size: 15px; font-weight: 600; color: var(--dark); margin: 0; line-height: 1.4; }
         
         /* TERMINAL (TIẾN TRÌNH) */
         .terminal { background: #090d16; color: #34d399; font-family: 'Courier New', Courier, monospace; padding: 15px; border-radius: 6px; height: 240px; overflow-y: auto; margin-bottom: 25px; font-size: 14px; font-weight: 600; line-height: 1.6; white-space: pre-wrap;}
@@ -92,9 +94,11 @@
             .panel-title { font-size: 15px; margin-bottom: 12px; }
             .grid-3 { grid-template-columns: 1fr; gap: 10px; }
             input[type="password"], select { font-size: 14px; padding: 10px 12px; }
-            .upload-wrapper { padding: 15px; }
-            .upload-wrapper i { font-size: 30px; }
-            .upload-wrapper p { font-size: 14px; }
+            /* Cập nhật mobile cho 2 nút tải lên */
+            .upload-actions { grid-template-columns: 1fr; gap: 10px; }
+            .upload-box { padding: 15px; }
+            .upload-box i { font-size: 28px; }
+            .upload-box p { font-size: 14px; }
             .btn-primary, .btn-secondary, .btn-success { font-size: 14px; padding: 12px; }
             .terminal { height: 180px; font-size: 12px; padding: 12px; line-height: 1.4; }
             .footer-grid { grid-template-columns: 1fr; gap: 10px; margin-top: 25px; padding-top: 15px; }
@@ -125,14 +129,27 @@
         </div>
     </div>
 
+    <!-- KHU VỰC TẢI DỮ LIỆU ĐÃ ĐƯỢC NÂNG CẤP -->
     <div class="panel">
-        <h3 class="panel-title"><i class="fa-solid fa-folder-open"></i> 2. Chọn Nguồn Dữ Liệu</h3>
-        <input type="file" id="folderInput" webkitdirectory directory multiple accept="application/pdf" style="display: none;" onchange="handleFolderSelect(event)">
+        <h3 class="panel-title"><i class="fa-solid fa-file-arrow-up"></i> 2. Chọn Nguồn Dữ Liệu</h3>
         
-        <div class="upload-wrapper" onclick="document.getElementById('folderInput').click()">
-            <i class="fa-regular fa-folder-closed"></i>
-            <p id="folderText">Chạm vào đây để Chọn Thư Mục chứa các file PDF</p>
+        <!-- Input 1: Cho phép tải nhiều file lẻ -->
+        <input type="file" id="fileInput" multiple accept="application/pdf" style="display: none;" onchange="handleDataSelect(event)">
+        <!-- Input 2: Cho phép tải nguyên thư mục -->
+        <input type="file" id="folderInput" webkitdirectory directory multiple accept="application/pdf" style="display: none;" onchange="handleDataSelect(event)">
+        
+        <div class="upload-actions">
+            <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+                <i class="fa-regular fa-file-pdf"></i>
+                <p>Chọn Nhiều File PDF</p>
+            </div>
+            <div class="upload-box" onclick="document.getElementById('folderInput').click()">
+                <i class="fa-regular fa-folder-closed"></i>
+                <p>Chọn Nguyên Thư Mục</p>
+            </div>
         </div>
+        
+        <div id="uploadStatus" class="upload-status"></div>
     </div>
 
     <button id="btnStart" class="btn-primary" onclick="startExtraction()" disabled>
@@ -141,7 +158,7 @@
     
     <div style="margin-top: 25px;">
         <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
-        <div class="terminal" id="terminalLog">> Hệ thống sẵn sàng... Mời cấu hình API và tải thư mục.<br></div>
+        <div class="terminal" id="terminalLog">> Hệ thống sẵn sàng... Mời cấu hình API và tải dữ liệu.<br></div>
     </div>
 
     <div class="table-responsive" id="tableContainer">
@@ -233,17 +250,26 @@
         }
     }
 
-    function handleFolderSelect(e) {
+    // HÀM MỚI CHUNG CHO CẢ CHỌN FILE VÀ CHỌN THƯ MỤC
+    function handleDataSelect(e) {
         const files = Array.from(e.target.files);
         pdfFiles = files.filter(f => f.name.toLowerCase().endsWith('.pdf'));
         
+        const statusDiv = document.getElementById('uploadStatus');
+        statusDiv.style.display = 'block';
+        
         if(pdfFiles.length > 0) {
-            document.getElementById('folderText').innerHTML = `<b style="color:var(--success)">Đã tải thư mục thành công! Nhận diện ${pdfFiles.length} file PDF.</b>`;
+            statusDiv.innerHTML = `<span style="color:var(--success)"><i class="fa-solid fa-circle-check"></i> Đã tải thành công! Nhận diện ${pdfFiles.length} file PDF.</span>`;
             log(`> 📁 Đã nạp ${pdfFiles.length} file PDF vào hệ thống.`);
         } else {
-            document.getElementById('folderText').innerHTML = `<b style="color:var(--danger)">Không tìm thấy file PDF nào!</b>`;
+            statusDiv.innerHTML = `<span style="color:var(--danger)"><i class="fa-solid fa-circle-exclamation"></i> Không tìm thấy file PDF nào!</span>`;
             pdfFiles = [];
         }
+        
+        // Reset lại input để có thể chọn lại cùng 1 file nếu cần
+        document.getElementById('fileInput').value = "";
+        document.getElementById('folderInput').value = "";
+        
         checkReady();
     }
 
@@ -270,9 +296,7 @@
         log(`> Kích hoạt Model: ${model}`);
         log(`> Bắt đầu xử lý ${pdfFiles.length} file...\n`);
         
-        // ==========================================
         // VÒNG QUÉT 1
-        // ==========================================
         for(let i=0; i < pdfFiles.length; i++) {
             let file = pdfFiles[i];
             log(`[${i+1}/${pdfFiles.length}] Đang phân tích: ${file.name}...`);
@@ -294,9 +318,7 @@
             }
         }
         
-        // ==========================================
-        // VÒNG QUÉT 2 (QUAY LẠI FILE NGHẼN MẠNG)
-        // ==========================================
+        // VÒNG QUÉT 2
         if (filesToRetry.length > 0) {
             log(`\n================================`);
             log(`🔄 Hệ thống nghỉ 5s trước khi quét lại ${filesToRetry.length} file bị nghẽn mạng...`);
@@ -321,7 +343,6 @@
         document.getElementById('exportContainer').style.display = 'block';
         document.getElementById('btnStart').disabled = false;
         
-        // Sắp xếp lại dữ liệu theo số thứ tự (STT) để tránh lộn xộn sau Vòng 2
         finalDataOut.sort((a, b) => a._STT - b._STT);
     }
 
