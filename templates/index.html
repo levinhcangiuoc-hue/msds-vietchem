@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hệ thống Tra cứu MSDS Pro - VIETCHEM</title>
-    <script src="[https://unpkg.com/xlsx/dist/xlsx.full.min.js](https://unpkg.com/xlsx/dist/xlsx.full.min.js)"></script>
-    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap)" rel="stylesheet">
-    <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
@@ -52,7 +52,8 @@
         button:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-primary { background: var(--primary); color: white; width: 100%; padding: 16px; font-size: 16px; box-shadow: 0 4px 6px rgba(30,64,175,0.2); margin-top: 5px;}
         .btn-secondary { background: var(--dark); color: white; width: 100%; }
-        .btn-success { background: var(--success); color: white; padding: 14px 30px; font-size: 15px; width: 100%; }
+        .btn-success { background: var(--success); color: white; padding: 14px 30px; font-size: 15px; width: 100%; margin-top: 10px; }
+        .btn-warning { background: var(--warning); color: white; width: 100%; padding: 16px; font-size: 16px; margin-top: 15px; box-shadow: 0 4px 6px rgba(217,119,6,0.2); display: none; }
         
         .terminal { background: #090d16; color: #34d399; font-family: 'Courier New', Courier, monospace; padding: 15px; border-radius: 6px; height: 240px; overflow-y: auto; margin-bottom: 25px; font-size: 14px; font-weight: 600; line-height: 1.6; white-space: pre-wrap;}
         .progress-bar-container { background: #e2e8f0; border-radius: 4px; height: 10px; overflow: hidden; margin-bottom: 15px; }
@@ -77,15 +78,9 @@
             .brand-header img { height: 60px; }
             .header-title { font-size: 18px; margin-bottom: 15px; }
             .panel { padding: 15px; margin-bottom: 15px; }
-            .panel-title { font-size: 15px; margin-bottom: 12px; }
-            .grid-3 { grid-template-columns: 1fr; gap: 10px; }
-            input[type="password"], select { font-size: 14px; padding: 10px 12px; }
-            .upload-actions { grid-template-columns: 1fr; gap: 10px; }
-            .upload-box { padding: 15px; }
-            .upload-box i { font-size: 28px; }
-            .upload-box p { font-size: 14px; }
-            .btn-primary, .btn-secondary, .btn-success { font-size: 14px; padding: 12px; }
-            .terminal { height: 180px; font-size: 12px; padding: 12px; line-height: 1.4; }
+            .grid-3, .upload-actions { grid-template-columns: 1fr; gap: 10px; }
+            input[type="password"], select, .btn-primary, .btn-secondary, .btn-success, .btn-warning { font-size: 14px; padding: 12px; }
+            .terminal { height: 180px; font-size: 12px; padding: 12px; }
             .footer-grid { grid-template-columns: 1fr; gap: 10px; margin-top: 25px; padding-top: 15px; }
         }
     </style>
@@ -130,12 +125,16 @@
                 <p>Chọn Nguyên Thư Mục</p>
             </div>
         </div>
-        
         <div id="uploadStatus" class="upload-status"></div>
     </div>
 
     <button id="btnStart" class="btn-primary" onclick="startExtraction()" disabled>
-        <i class="fa-solid fa-rocket"></i> BẮT ĐẦU TRÍCH XUẤT DỮ LIỆU
+        <i class="fa-solid fa-rocket"></i> BẮT ĐẦU TRÍCH XUẤT (CHẾ ĐỘ CUỐN CHIẾU)
+    </button>
+    
+    <!-- NÚT QUÉT LẠI (Sẽ hiện ra nếu có lỗi) -->
+    <button id="btnRetry" class="btn-warning" onclick="retryFailedFiles()">
+        <i class="fa-solid fa-rotate-right"></i> QUÉT LẠI CÁC FILE BỊ LỖI
     </button>
     
     <div style="margin-top: 25px;">
@@ -162,20 +161,12 @@
     <div style="text-align: center; display: none; margin-top: 15px;" id="exportContainer">
         <button class="btn-success" onclick="exportExcel()"><i class="fa-solid fa-file-excel"></i> TẢI BÁO CÁO EXCEL</button>
     </div>
-
-    <div class="footer-grid">
-        <div class="footer-card main-hq"><strong>🏢 TRỤ SỞ CHÍNH</strong><p>📍 Số 34, đường 3C, KDC Nam Hùng Vương, P. An Lạc, TP.HCM</p></div>
-        <div class="footer-card"><strong>🏭 CHI NHÁNH TẠI LONG AN</strong><p>📍 Kho K2-2, KCN Tân Kim mở rộng, Xã Cần Giuộc, Tây Ninh</p></div>
-        <div class="footer-card"><strong>🏭 CHI NHÁNH 2 LONG AN</strong><p>📍 Lô R24-R25 ĐS 8, KCN Hải sơn mở rộng, Xã Đức Hòa, Tây Ninh</p></div>
-        <div class="footer-card"><strong>🏭 CHI NHÁNH 3 LONG AN</strong><p>📍 Lô R9 & R10 ĐS 9, KCN Hải Sơn mở rộng, Xã Đức Hòa, Tây Ninh</p></div>
-        <div class="footer-card"><strong>🏭 CHI NHÁNH 04 LONG AN</strong><p>📍 Lô H9A-H10, Đường N3, KCN Nam Thuận, Xã Mỹ Hạnh, Tây Ninh</p></div>
-        <div class="footer-card"><strong>🏭 CHI NHÁNH 05</strong><p>📍 Lô H11, Đường N3, KCN Nam Thuận, Xã Mỹ Hạnh, Tây Ninh</p></div>
-    </div>
 </div>
 
 <script>
     let pdfFiles = [];
     let finalDataOut = [];
+    let failedFilesList = []; // Danh sách lưu trữ các file cứng đầu cần nút "Quét lại"
     const terminal = document.getElementById('terminalLog');
     
     function log(msg) { terminal.innerHTML += msg + "<br>"; terminal.scrollTop = terminal.scrollHeight; }
@@ -189,168 +180,190 @@
     async function scanModels() {
         const apiKey = document.getElementById('apiKey').value;
         if (!apiKey) return alert("Vui lòng nhập API Key!");
-        
         log("> Đang quét hệ thống AI của Google...");
         await fetch('/api/config', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({api_key: apiKey}) });
-        
         try {
             let res = await fetch('/api/scan_models', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({api_key: apiKey}) });
             let data = await res.json();
-            
             if (data.status === "success") {
                 let sel = document.getElementById('modelSelect');
                 sel.innerHTML = '<option value="">-- Chọn Model --</option>'; 
                 data.models.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
                 log(`> ✅ Quét thành công! Đã nạp ${data.models.length} model.`);
                 checkReady();
-            } else {
-                log(`> ❌ Lỗi API: ${data.message}`);
-                alert("Lỗi cấu hình API. Vui lòng kiểm tra lại Key!");
-            }
-        } catch (e) {
-            log(`> ❌ Lỗi kết nối máy chủ.`);
-        }
+            } else { log(`> ❌ Lỗi API: ${data.message}`); alert("Lỗi cấu hình API!"); }
+        } catch (e) { log(`> ❌ Lỗi kết nối máy chủ.`); }
     }
 
     function handleDataSelect(e) {
         const files = Array.from(e.target.files);
         pdfFiles = files.filter(f => f.name.toLowerCase().endsWith('.pdf'));
-        
         const statusDiv = document.getElementById('uploadStatus');
         statusDiv.style.display = 'block';
-        
         if(pdfFiles.length > 0) {
             statusDiv.innerHTML = `<span style="color:var(--success)"><i class="fa-solid fa-circle-check"></i> Đã tải thành công! Nhận diện ${pdfFiles.length} file PDF.</span>`;
-            log(`> 📁 Đã nạp ${pdfFiles.length} file PDF vào hệ thống.`);
+            log(`> 📁 Đã nạp ${pdfFiles.length} file PDF vào bộ nhớ tạm.`);
         } else {
             statusDiv.innerHTML = `<span style="color:var(--danger)"><i class="fa-solid fa-circle-exclamation"></i> Không tìm thấy file PDF nào!</span>`;
             pdfFiles = [];
         }
-        
-        document.getElementById('fileInput').value = "";
-        document.getElementById('folderInput').value = "";
+        document.getElementById('fileInput').value = ""; document.getElementById('folderInput').value = "";
         checkReady();
     }
 
     function checkReady() {
         if (pdfFiles.length > 0 && document.getElementById('modelSelect').value !== "") {
             document.getElementById('btnStart').disabled = false;
-        } else {
-            document.getElementById('btnStart').disabled = true;
-        }
+        } else { document.getElementById('btnStart').disabled = true; }
     }
 
     async function startExtraction() {
         document.getElementById('btnStart').disabled = true;
+        document.getElementById('btnRetry').style.display = 'none';
+        document.getElementById('exportContainer').style.display = 'none';
+        document.getElementById('tableContainer').style.display = 'block';
+        
+        finalDataOut = [];
+        failedFilesList = [];
+        let filesToRetryRound2 = [];
+        let globalStt = 1;
+        
         const apiKey = document.getElementById('apiKey').value;
         const model = document.getElementById('modelSelect').value;
         
-        document.getElementById('tableContainer').style.display = 'block';
-        document.getElementById('tableBody').innerHTML = '';
-        finalDataOut = [];
-        let filesToRetry = [];
-        let globalStt = 1;
-        
         log(`\n================================`);
         log(`> Kích hoạt Model: ${model}`);
-        log(`> Bắt đầu xử lý ${pdfFiles.length} file...\n`);
+        log(`> CHẾ ĐỘ CUỐN CHIẾU: Xử lý an toàn từng file một để chống tràn RAM...`);
         
         // ==========================================
-        // VÒNG QUÉT 1
+        // VÒNG QUÉT 1 (Cuốn chiếu từng file)
         // ==========================================
         for(let i=0; i < pdfFiles.length; i++) {
             let file = pdfFiles[i];
-            log(`[${i+1}/${pdfFiles.length}] Đang phân tích: ${file.name}...`);
+            log(`[${i+1}/${pdfFiles.length}] Đang gửi file: ${file.name}...`);
             document.getElementById('progressBar').style.width = `${((i+1)/pdfFiles.length)*100}%`;
             
             let result = await processSingleFile(file, apiKey, model);
             
             if (result.status === "success") {
                 log(`   -> ✅ XONG: ${result.data.Ten_San_Pham || 'N/A'}`);
-                globalStt = addResultToTable(result.data, file.name, globalStt);
+                pushSuccessData(result.data, file.name, globalStt);
             } else {
-                // SỬA ĐỔI QUAN TRỌNG: Mọi lỗi (mất kết nối, sập server, Google báo lỗi...) đều ném hết vào Vòng 2
-                log(`   -> ⚠️ LỖI: ${result.message}`);
-                log(`   -> Đưa vào danh sách chờ để quét lại ở Vòng 2...`);
-                filesToRetry.push({file: file, originalStt: globalStt});
-                globalStt++;
+                log(`   -> ⚠️ Gặp sự cố: ${result.message}. Đã đưa vào danh sách Vòng 2.`);
+                filesToRetryRound2.push({file: file, stt: globalStt});
             }
+            globalStt++;
+            renderTable(); // Vẽ lại bảng ngay sau mỗi file
         }
         
         // ==========================================
-        // VÒNG QUÉT 2 (QUÉT TẤT CẢ CÁC FILE LỖI)
+        // VÒNG QUÉT 2 (Tự động chạy lại các file lỗi)
         // ==========================================
-        if (filesToRetry.length > 0) {
+        if (filesToRetryRound2.length > 0) {
             log(`\n================================`);
-            log(`🔄 HỆ THỐNG NGHỈ 5S TRƯỚC KHI QUÉT LẠI ${filesToRetry.length} FILE BỊ LỖI...`);
+            log(`🔄 HỆ THỐNG NGHỈ 5S TRƯỚC KHI TỰ ĐỘNG CHẠY VÒNG 2...`);
             await new Promise(r => setTimeout(r, 5000));
             
-            for(let i=0; i < filesToRetry.length; i++) {
-                let item = filesToRetry[i];
-                log(`[VÒNG 2 - ${i+1}/${filesToRetry.length}] Quét lại: ${item.file.name}...`);
+            for(let i=0; i < filesToRetryRound2.length; i++) {
+                let item = filesToRetryRound2[i];
+                log(`[VÒNG 2 - ${i+1}/${filesToRetryRound2.length}] Thử lại file: ${item.file.name}...`);
                 
                 let result = await processSingleFile(item.file, apiKey, model);
                 if (result.status === "success") {
-                    log(`   -> ✅ THÀNH CÔNG Ở VÒNG 2!`);
-                    addResultToTable(result.data, item.file.name, item.originalStt); 
+                    log(`   -> ✅ THÀNH CÔNG TẠI VÒNG 2!`);
+                    pushSuccessData(result.data, item.file.name, item.stt);
                 } else {
-                    // Nếu vòng 2 vẫn lỗi thì mới ghi nhận là thất bại hoàn toàn
-                    log(`   -> ❌ THẤT BẠI TẠI VÒNG 2: ${result.message}`);
-                    addErrorToTable(item.file.name, "Không thể phân tích", result.message, item.originalStt);
+                    log(`   -> ❌ THẤT BẠI: ${result.message}`);
+                    pushErrorData(item.file.name, "Không thể phân tích", result.message, item.stt);
+                    failedFilesList.push(item); // Đưa vào danh sách cứng đầu
                 }
+                renderTable();
             }
         }
         
-        log(`\n✨ HOÀN TẤT TOÀN BỘ QUÁ TRÌNH!`);
+        log(`\n✨ HOÀN TẤT QUÁ TRÌNH TỰ ĐỘNG!`);
         document.getElementById('exportContainer').style.display = 'block';
         document.getElementById('btnStart').disabled = false;
         
-        finalDataOut.sort((a, b) => a._STT - b._STT);
+        // Hiển thị nút bấm thủ công nếu vẫn còn file lỗi cứng đầu
+        if (failedFilesList.length > 0) {
+            document.getElementById('btnRetry').style.display = 'block';
+            log(`⚠️ HỆ THỐNG BÁO CÁO: Vẫn còn ${failedFilesList.length} file thất bại. Bạn có thể bấm nút màu cam bên dưới để ép máy chủ quét lại lần nữa!`);
+        }
+    }
+
+    // ==========================================
+    // HÀM QUÉT LẠI THỦ CÔNG (Lần 3, Lần 4...)
+    // ==========================================
+    async function retryFailedFiles() {
+        document.getElementById('btnRetry').style.display = 'none';
+        document.getElementById('exportContainer').style.display = 'none';
+        
+        const apiKey = document.getElementById('apiKey').value;
+        const model = document.getElementById('modelSelect').value;
+        
+        // Copy danh sách sang hàng chờ mới và làm rỗng danh sách cũ
+        let filesToProcess = [...failedFilesList];
+        failedFilesList = []; 
+        
+        log(`\n================================`);
+        log(`🔥 KÍCH HOẠT ÉP QUÉT LẠI THỦ CÔNG (${filesToProcess.length} file)...`);
+        
+        for(let i=0; i < filesToProcess.length; i++) {
+            let item = filesToProcess[i];
+            log(`[ÉP QUÉT - ${i+1}/${filesToProcess.length}] File: ${item.file.name}...`);
+            document.getElementById('progressBar').style.width = `${((i+1)/filesToProcess.length)*100}%`;
+            
+            // Xóa dòng Lỗi màu đỏ cũ của file này ra khỏi dữ liệu
+            finalDataOut = finalDataOut.filter(row => row._STT !== item.stt);
+            renderTable(); // Vẽ lại để thấy dòng lỗi biến mất
+            
+            let result = await processSingleFile(item.file, apiKey, model);
+            
+            if (result.status === "success") {
+                log(`   -> ✅ THÀNH CÔNG ĐÁNG KINH NGẠC!`);
+                pushSuccessData(result.data, item.file.name, item.stt);
+            } else {
+                log(`   -> ❌ VẪN LỖI: ${result.message}`);
+                pushErrorData(item.file.name, "Không thể phân tích", result.message, item.stt);
+                failedFilesList.push(item); // Ném lại vào danh sách cứng đầu
+            }
+            renderTable(); // Vẽ lại kết quả mới
+        }
+        
+        log(`\n✨ HOÀN TẤT VÒNG ÉP QUÉT!`);
+        document.getElementById('exportContainer').style.display = 'block';
+        
+        if (failedFilesList.length > 0) {
+            document.getElementById('btnRetry').style.display = 'block';
+            log(`⚠️ BÁO CÁO: Vẫn còn ${failedFilesList.length} file chưa chịu khuất phục. Bạn có thể bấm QUÉT LẠI tiếp nếu muốn!`);
+        } else {
+            log(`🎉 TUYỆT VỜI! Toàn bộ các file lỗi đã được xử lý thành công 100%!`);
+        }
     }
 
     async function processSingleFile(file, apiKey, modelName) {
         let formData = new FormData();
-        formData.append("file", file);
-        formData.append("api_key", apiKey);
-        formData.append("model", modelName);
-        
+        formData.append("file", file); formData.append("api_key", apiKey); formData.append("model", modelName);
         try {
             let res = await fetch('/api/analyze', { method: 'POST', body: formData });
             return await res.json();
         } catch(e) {
-            // Lỗi khi sập server hoặc rớt mạng sẽ trả về status "error", 
-            // và đoạn code bên trên sẽ tự động hiểu là đẩy vào Vòng 2
             return {status: "error", message: "Mất kết nối với máy chủ nội bộ."};
         }
     }
 
-    function addResultToTable(data, filename, stt) {
-        let tbody = document.getElementById('tableBody');
+    // ==========================================
+    // HỆ THỐNG XỬ LÝ DỮ LIỆU THÔNG MINH MỚI
+    // ==========================================
+    function pushSuccessData(data, filename, stt) {
         let sp = data.Ten_San_Pham || "N/A";
         let tps = data.Thanh_Phan || [];
-        
         if (tps.length === 0) tps = [{Ten_Chat: "Không tìm thấy", Ma_CAS: "N/A", Nong_Do: "N/A"}];
         
         tps.forEach((tp, idx) => {
-            let tr = document.createElement('tr');
-            if(idx === 0) tr.className = "row-group";
-            
-            let htmlStt = idx === 0 ? `<b style="color:var(--primary-dark)">${stt}</b>` : "";
-            let htmlFile = idx === 0 ? `<b>${filename}</b>` : "";
-            let htmlSp = idx === 0 ? sp : "";
-            
-            tr.innerHTML = `
-                <td style="text-align:center;">${htmlStt}</td>
-                <td>${htmlFile}</td>
-                <td style="color: var(--dark); font-weight: 500;">${htmlSp}</td>
-                <td>${tp.Ten_Chat || ''}</td>
-                <td style="font-family: monospace; font-size:14px; font-weight:700;">${tp.Ma_CAS || ''}</td>
-                <td style="color: var(--success); font-weight: 600;">${tp.Nong_Do || ''}</td>
-            `;
-            tbody.appendChild(tr);
-            
             finalDataOut.push({
-                _STT: stt,
+                _STT: stt, isError: false,
                 "STT": idx === 0 ? stt : "",
                 "Tên File": idx === 0 ? filename : "",
                 "Sản Phẩm": idx === 0 ? sp : "",
@@ -359,40 +372,59 @@
                 "Nồng Độ": tp.Nong_Do || ""
             });
         });
-        return stt + 1;
     }
 
-    function addErrorToTable(filename, sp_error, reason, stt) {
-        let tbody = document.getElementById('tableBody');
-        let tr = document.createElement('tr');
-        tr.className = "row-group";
-        tr.style.backgroundColor = "#fef2f2";
-        tr.innerHTML = `
-            <td style="text-align:center;"><b style="color:var(--danger)">${stt}</b></td>
-            <td><b>${filename}</b></td>
-            <td style="color:var(--danger); font-weight:700;">${sp_error}</td>
-            <td colspan="3" style="color:var(--gray); font-style:italic;">Lý do: ${reason}</td>
-        `;
-        tbody.appendChild(tr);
-        
+    function pushErrorData(filename, sp_error, reason, stt) {
         finalDataOut.push({
-            _STT: stt,
-            "STT": stt,
-            "Tên File": filename,
-            "Sản Phẩm": sp_error,
-            "Thành Phần": reason,
-            "Mã CAS": "-",
-            "Nồng Độ": "-"
+            _STT: stt, isError: true,
+            "STT": stt, "Tên File": filename, "Sản Phẩm": sp_error, "Thành Phần": reason, "Mã CAS": "-", "Nồng Độ": "-"
+        });
+    }
+
+    function renderTable() {
+        let tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        
+        // Luôn sắp xếp lại theo số thứ tự gốc để bảng không bị lộn xộn sau khi Quét lại
+        finalDataOut.sort((a, b) => a._STT - b._STT);
+        
+        let currentStt = -1;
+        finalDataOut.forEach(row => {
+            let tr = document.createElement('tr');
+            let isFirst = (row._STT !== currentStt);
+            if (isFirst) { tr.className = "row-group"; currentStt = row._STT; }
+            
+            if (row.isError) {
+                tr.style.backgroundColor = "#fef2f2";
+                tr.innerHTML = `
+                    <td style="text-align:center;"><b style="color:var(--danger)">${row._STT}</b></td>
+                    <td><b>${row["Tên File"]}</b></td>
+                    <td style="color:var(--danger); font-weight:700;">${row["Sản Phẩm"]}</td>
+                    <td colspan="3" style="color:var(--gray); font-style:italic;">Lý do: ${row["Thành Phần"]}</td>
+                `;
+            } else {
+                let htmlStt = isFirst ? `<b style="color:var(--primary-dark)">${row._STT}</b>` : "";
+                let htmlFile = isFirst ? `<b>${row["Tên File"]}</b>` : "";
+                let htmlSp = isFirst ? row["Sản Phẩm"] : "";
+                tr.innerHTML = `
+                    <td style="text-align:center;">${htmlStt}</td>
+                    <td>${htmlFile}</td>
+                    <td style="color: var(--dark); font-weight: 500;">${htmlSp}</td>
+                    <td>${row["Thành Phần"]}</td>
+                    <td style="font-family: monospace; font-size:14px; font-weight:700;">${row["Mã CAS"]}</td>
+                    <td style="color: var(--success); font-weight: 600;">${row["Nồng Độ"]}</td>
+                `;
+            }
+            tbody.appendChild(tr);
         });
     }
 
     function exportExcel() {
         let exportData = finalDataOut.map(row => {
             let newRow = {...row};
-            delete newRow._STT;
+            delete newRow._STT; delete newRow.isError;
             return newRow;
         });
-        
         const ws = XLSX.utils.json_to_sheet(exportData);
         const wb = XLSX.utils.book_new();
         ws['!cols'] = [{wch: 6}, {wch: 35}, {wch: 35}, {wch: 40}, {wch: 15}, {wch: 15}];
